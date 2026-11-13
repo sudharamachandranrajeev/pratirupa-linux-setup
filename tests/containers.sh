@@ -44,6 +44,12 @@ useradd -m tester 2>/dev/null
 echo "tester ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/tester
 cp -r /src ~tester/pratirupa && chown -R tester: ~tester/pratirupa
 cd ~tester/pratirupa
+sudo -u tester -H sudo -n true 2>/dev/null || {
+  echo "=== sudo for the test user does not work; diagnostics:"
+  ls -l /etc/sudoers /usr/etc/sudoers /etc/sudoers.d 2>&1
+  sudo -l -U tester 2>&1
+  grep -hvE "^[[:space:]]*(#|$)" /etc/sudoers /usr/etc/sudoers 2>/dev/null
+}
 sudo -u tester -H bash -c "
   ./setup.sh list &&
   echo ===DRYRUN=== &&
