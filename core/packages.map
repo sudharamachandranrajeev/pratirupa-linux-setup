@@ -69,7 +69,7 @@ nethogs               nethogs                                   nethogs         
 
 # --- developer toolchain ----------------------------------------------------
 rustup                rustup                                    rustup                                   rustup                                   rustup
-nodejs                nodejs,npm                                nodejs,npm                               nodejs,npm                               nodejs-default,npm-default
+nodejs                nodejs,npm                                nodejs,npm                               nodejs,nodejs-npm                               nodejs-default,npm-default
 clang                 clang,llvm                                clang,llvm                               clang,llvm                               clang,llvm
 github-cli            github-cli                                gh                                       gh                                       gh
 glab                  glab                                      glab|-                                   glab                                     -
@@ -84,4 +84,4 @@ ollama-nvidia         ollama-cuda                               -               
 ollama-amd            ollama-rocm                               -                                        -                                        -
 ollama-cpu            ollama                                    -                                        -                                        -
 flutter-deps          clang,cmake,ninja,pkgconf,gtk3            clang,cmake,ninja-build,pkg-config,libgtk-3-dev  clang,cmake,ninja-build,gtk3-devel  clang,cmake,ninja,gtk3-devel
-tauri-deps            webkit2gtk-4.1,libappindicator-gtk3,librsvg  libwebkit2gtk-4.1-dev,libayatana-appindicator3-dev,librsvg2-dev  webkit2gtk4.1-devel,libappindicator-gtk3-devel,librsvg2-devel  webkit2gtk3-devel,libappindicator3-devel,librsvg-devel
+tauri-deps            webkit2gtk-4.1,libayatana-appindicator,librsvg  libwebkit2gtk-4.1-dev,libayatana-appindicator3-dev,librsvg2-dev  webkit2gtk4.1-devel,libappindicator-gtk3-devel,librsvg2-devel  webkit2gtk3-devel,libappindicator3-devel,librsvg-devel

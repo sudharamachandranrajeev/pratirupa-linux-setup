@@ -29,7 +29,9 @@ declare -A PREP=(
   [debian]='apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo git jq curl pciutils >/dev/null'
   [ubuntu]='apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sudo git jq curl pciutils >/dev/null'
   [fedora]='dnf -y -q install sudo git jq curl pciutils >/dev/null && dnf -q makecache >/dev/null'
-  [opensuse]='zypper -n -q refresh && zypper -n -q in sudo git jq curl pciutils >/dev/null'
+  # Tumbleweed keeps sudoers in /usr/etc and asks for the root password
+  # (targetpw), which overrides sudoers.d; the test user's rule goes last.
+  [opensuse]='zypper -n -q refresh && zypper -n -q in sudo git jq curl pciutils >/dev/null && { [ -f /etc/sudoers ] || cp /usr/etc/sudoers /etc/sudoers 2>/dev/null; true; } && echo "tester ALL=(ALL) NOPASSWD: ALL" >>/etc/sudoers'
 )
 
 distros=("$@")
