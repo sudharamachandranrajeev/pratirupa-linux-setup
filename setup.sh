@@ -32,7 +32,7 @@ if [[ -z $here || ! -f $here/core/pratirupa.sh ]]; then
   if [[ -d $dest/.git ]]; then git -C "$dest" pull -q --ff-only
   else git clone -q --depth 1 "$REPO_URL" "$dest"
   fi || { echo "Could not download Pratirupa." >&2; exit 1; }
-  if [[ -r /dev/tty ]]; then exec bash "$dest/setup.sh" "$@" </dev/tty; fi
+  if { : </dev/tty; } 2>/dev/null; then exec bash "$dest/setup.sh" "$@" </dev/tty; fi
   exec bash "$dest/setup.sh" "$@"
 fi
 
