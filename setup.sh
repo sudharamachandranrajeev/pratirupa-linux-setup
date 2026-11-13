@@ -114,8 +114,12 @@ pick_modules() {
 
 sudo_keepalive() {
   [[ $PR_DRY_RUN == 1 || $EUID -eq 0 ]] && return 0
-  echo "Some steps change system files; sudo will ask for your password once."
-  sudo -v || pr_die "sudo is needed for the selected modules."
+  # Passwordless sudo needs no prompt. ("sudo -v" asks anyway when any other
+  # sudoers rule, such as openSUSE's default, still wants a password.)
+  if ! sudo -n true 2>/dev/null; then
+    echo "Some steps change system files; sudo will ask for your password once."
+    sudo -v || pr_die "sudo is needed for the selected modules."
+  fi
   (while kill -0 $$ 2>/dev/null; do sudo -n true; sleep 50; done) 2>/dev/null &
   KEEPALIVE=$!
   trap 'kill $KEEPALIVE 2>/dev/null' EXIT
