@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# Cast the screen to a TV or display on the network with GNOME Network Displays.
+# It finds Miracast sinks over Wi-Fi Direct (LG "Screen Share", Samsung, Fire TV,
+# Windows "Project to this PC") and Chromecast devices on the LAN, and captures the
+# screen through the xdg-desktop-portal picker.
+#
+#   cast-screen               open the cast window (runs setup first if needed)
+#   cast-screen --setup       install packages and open the firewall ports
+#   cast-screen --trust <ip>  let a Chromecast TV fetch the stream through ufw
+
+# gst-plugins-bad: va H.264 encoder + MPEG-TS muxer, ugly: x264 fallback,
+# good: RTP, libav: AAC audio.
+packages=(dnsmasq gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav)
+aur_packages=(gnome-network-displays)
+
+# Chromecast TVs that may fetch the stream, by IP address. Add yours with
+# `cast-screen --trust <ip>` (give the TV a DHCP reservation on the router so
+# the address stays put), or list them here.
+trusted_tvs=()
+
+move_audio() {
+  pactl set-default-sink "$1"
+  pactl list short sink-inputs | while read -r id _; do
+    pactl move-sink-input "$id" "$1"
+  done
+}
+
+# GNOME Network Displays streams the monitor of its own null sink, and only GNOME
+# Shell switches the output to it. Make that sink the default while a cast runs,
+# then put the previous sink back.
+route_audio() {
+  exec 9>"$XDG_RUNTIME_DIR/cast-screen-audio.lock"
+  flock -n 9 || exit 0
+
+  local cast previous=
+  { echo start; pactl subscribe; } | while read -r _; do
+    cast=$(pactl list short sinks | awk '$2 ~ /^gnome_network_displays/ { print $2; exit }')
+    if [[ -n $cast && -z $previous ]]; then
+      previous=$(pactl get-default-sink)
+      move_audio "$cast"
+    elif [[ -z $cast && -n $previous ]]; then
+      move_audio "$previous"
+      previous=
+    fi
+    pgrep -x gnome-network-displays >/dev/null || exit 0
+  done
+}
+
+trust_tv() {
+  # The Chromecast stream is served over HTTP on a random port (libsoup listens on
+  # port 0), so the TV gets all TCP rather than one port.
+  sudo ufw allow proto tcp from "$1" comment 'Chromecast TV stream'
+}
+
+case ${1-} in
+--setup)
+  set -e
+  echo "Setting up screen casting..."
+  omarchy-pkg-add "${packages[@]}"
+  omarchy-pkg-aur-add "${aur_packages[@]}"
+
+  if systemctl is-active -q ufw; then
+    # The TV connects back to us: RTSP control on 7236, Miracast over
+    # infrastructure on 7250, mDNS discovery for Chromecast, and DHCP when this
+    # laptop ends up as the Wi-Fi Direct group owner.
+    # Only from private (home/office) networks.
+    for net in 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16; do
+      sudo ufw allow proto tcp from "$net" to any port 7236 comment 'Miracast RTSP'
+      sudo ufw allow proto tcp from "$net" to any port 7250 comment 'Miracast over infrastructure'
+      sudo ufw allow proto udp from "$net" to any port 5353 comment 'mDNS'
+    done
+    sudo ufw allow proto udp from any port 68 to any port 67 comment 'Wi-Fi Direct DHCP'
+    for tv in "${trusted_tvs[@]}"; do
+      trust_tv "$tv"
+    done
+  fi
+  exit 0
+  ;;
+--trust)
+  [[ -n ${2-} ]] || { echo "Usage: cast-screen --trust <ip>" >&2; exit 1; }
+  trust_tv "$2"
+  exit
+  ;;
+--route-audio)
+  route_audio
+  exit
+  ;;
+esac
+
+if omarchy-pkg-missing "${packages[@]}" "${aur_packages[@]}"; then
+  exec omarchy-launch-floating-terminal-with-presentation \
+    "cast-screen --setup && cast-screen"
+fi
+
+setsid uwsm-app -- gnome-network-displays >/dev/null 2>&1 &
+# Wait for the app so the audio router does not find it missing and quit.
+for _ in {1..50}; do
+  pgrep -x gnome-network-displays >/dev/null && break
+  sleep 0.1
+done
+setsid cast-screen --route-audio >/dev/null 2>&1 &

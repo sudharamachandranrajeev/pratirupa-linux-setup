@@ -1,0 +1,13 @@
+#!/bin/bash
+# Swap in the Clinical theme's screensaver art while that theme is active,
+# and restore the previous art when switching to any other theme.
+branding=~/.config/omarchy/branding/screensaver.txt
+backup=~/.config/omarchy/branding/screensaver.txt.pre-clinical
+theme_art=~/.config/omarchy/themes/clinical/screensaver.txt
+
+if [[ $1 == "clinical" && -f $theme_art ]]; then
+  [[ -f $backup ]] || cp "$branding" "$backup"
+  cp "$theme_art" "$branding"
+elif [[ -f $backup ]]; then
+  mv "$backup" "$branding"
+fi

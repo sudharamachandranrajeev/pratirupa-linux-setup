@@ -1,0 +1,3 @@
+# Machine-local files never belong here
+*.log
+/capture-*.md

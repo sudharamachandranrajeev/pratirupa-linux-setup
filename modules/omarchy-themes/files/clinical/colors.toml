@@ -1,0 +1,36 @@
+# Clinical — a calm, high-efficiency theme for healthcare professionals.
+# Deep scrub-teal surfaces, sterile whites, and vital-sign accents.
+mode = "dark"
+
+accent = "#2dd4bf"
+selection = "#1b3f4a"
+muted = "#2e5561"
+
+background = "#0c1a21"
+dark_background = "#09151b"
+darker_background = "#050e12"
+lighter_background = "#132a33"
+
+foreground = "#d8e9ee"
+dark_foreground = "#6d97a3"
+light_foreground = "#b5d0d8"
+bright_foreground = "#f3fbfc"
+
+hyprland_active_border = "rgba(2dd4bfee) rgba(7dd3fcee) 45deg"
+hyprland_inactive_border = "rgba(1b3f4aaa)"
+
+red = "#ff6b7a"
+yellow = "#f5c86a"
+orange = "#ff9e64"
+green = "#4ade80"
+cyan = "#5eead4"
+blue = "#60a5fa"
+magenta = "#b79cff"
+brown = "#8c6d52"
+
+bright_red = "#ff8e99"
+bright_yellow = "#f9da93"
+bright_green = "#86efac"
+bright_cyan = "#99f6e4"
+bright_blue = "#93c5fd"
+bright_magenta = "#cdbbff"

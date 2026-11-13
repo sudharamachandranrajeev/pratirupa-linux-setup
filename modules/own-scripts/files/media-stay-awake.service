@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep screen awake while media is playing
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/media-stay-awake
+Environment=PATH=%h/.local/bin:/usr/share/omarchy/bin:/usr/local/bin:/usr/bin
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

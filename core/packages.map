@@ -1,0 +1,87 @@
+# Generic package name -> package per distro family.
+#
+#   name  arch  debian  fedora  suse
+#
+# Omarchy uses the arch column. A cell lists alternatives separated by "|",
+# tried in order; the first one this machine can provide wins. Join several
+# packages for one alternative with ",". Prefixes: aur: (via yay/paru; yay
+# also takes repo packages, so Omarchy's own repo is used first) and flatpak:
+# (a Flathub app id). "-" means not offered on that family.
+#
+# name                arch                                      debian                                   fedora                                   suse
+
+# --- bootstrap --------------------------------------------------------------
+git                   git                                       git                                      git                                      git
+curl                  curl                                      curl                                     curl                                     curl
+jq                    jq                                        jq                                       jq                                       jq
+gum                   gum                                       gum|-                                    gum|-                                    gum|-
+build-tools           base-devel                                build-essential                          gcc,gcc-c++,make                         gcc,gcc-c++,make
+unzip                 unzip                                     unzip                                    unzip                                    unzip
+
+# --- desktop ----------------------------------------------------------------
+gnome-keyring         gnome-keyring                             gnome-keyring                            gnome-keyring                            gnome-keyring
+portal-gtk            xdg-desktop-portal-gtk                    xdg-desktop-portal-gtk                   xdg-desktop-portal-gtk                   xdg-desktop-portal-gtk
+fuse2                 fuse2                                     libfuse2t64|libfuse2                     fuse-libs                                libfuse2
+libsecret             libsecret                                 libsecret-1-0                            libsecret                                libsecret-1-0
+wpewebkit             wpewebkit                                 -                                        -                                        -
+socat                 socat                                     socat                                    socat                                    socat
+owe-lockfeed          owe-lockfeed                              -                                        -                                        -
+
+# --- apps -------------------------------------------------------------------
+brave                 aur:brave-bin                             flatpak:com.brave.Browser                flatpak:com.brave.Browser                flatpak:com.brave.Browser
+zen-browser           aur:zen-browser-bin                       flatpak:app.zen_browser.zen              flatpak:app.zen_browser.zen              flatpak:app.zen_browser.zen
+ghostty               ghostty                                   -                                        -                                        ghostty|-
+vscode                aur:visual-studio-code-bin                flatpak:com.visualstudio.code            flatpak:com.visualstudio.code            flatpak:com.visualstudio.code
+obs-studio            obs-studio                                obs-studio                               obs-studio|flatpak:com.obsproject.Studio flatpak:com.obsproject.Studio
+kdenlive              kdenlive                                  kdenlive                                 kdenlive                                 kdenlive
+vlc                   vlc,vlc-plugin-ass,vlc-plugin-ffmpeg,vlc-plugin-freetype|vlc  vlc                  vlc|flatpak:org.videolan.VLC             vlc
+steam                 steam                                     flatpak:com.valvesoftware.Steam          flatpak:com.valvesoftware.Steam          flatpak:com.valvesoftware.Steam
+discord               discord                                   flatpak:com.discordapp.Discord           flatpak:com.discordapp.Discord           flatpak:com.discordapp.Discord
+telegram              telegram-desktop                          telegram-desktop                         flatpak:org.telegram.desktop             flatpak:org.telegram.desktop
+thunderbird           thunderbird                               thunderbird                              thunderbird                              MozillaThunderbird
+qbittorrent           qbittorrent                               qbittorrent                              qbittorrent                              qbittorrent
+rustdesk              rustdesk|aur:rustdesk-bin                 flatpak:com.rustdesk.RustDesk            flatpak:com.rustdesk.RustDesk            flatpak:com.rustdesk.RustDesk
+xournalpp             xournalpp                                 xournalpp                                xournalpp                                xournalpp
+wine                  wine,winetricks                           wine,winetricks                          wine,winetricks                          wine
+waydroid              waydroid                                  -                                        waydroid                                 -
+torbrowser            torbrowser-launcher                       torbrowser-launcher                      flatpak:org.torproject.torbrowser-launcher flatpak:org.torproject.torbrowser-launcher
+github-desktop        aur:github-desktop-bin|aur:github-desktop flatpak:io.github.shiftey.Desktop        flatpak:io.github.shiftey.Desktop        flatpak:io.github.shiftey.Desktop
+jdownloader           aur:jdownloader2                          flatpak:org.jdownloader.JDownloader      flatpak:org.jdownloader.JDownloader      flatpak:org.jdownloader.JDownloader
+protonmail-bridge     protonmail-bridge                         flatpak:ch.protonmail.protonmail-bridge  flatpak:ch.protonmail.protonmail-bridge  flatpak:ch.protonmail.protonmail-bridge
+wayvnc                wayvnc                                    wayvnc                                   wayvnc                                   wayvnc
+claude-desktop        claude-desktop                            -                                        -                                        -
+codex-desktop         openai-codex-desktop                      -                                        -                                        -
+hermes-desktop        hermes-desktop                            -                                        -                                        -
+
+# --- screen casting ---------------------------------------------------------
+network-displays     aur:gnome-network-displays                 gnome-network-displays                   gnome-network-displays                   flatpak:org.gnome.NetworkDisplays
+gst-cast              gst-plugins-good,gst-plugins-bad,gst-plugins-ugly,gst-libav  gstreamer1.0-plugins-good,gstreamer1.0-plugins-bad,gstreamer1.0-plugins-ugly,gstreamer1.0-libav  gstreamer1-plugins-good,gstreamer1-plugins-bad-free,gstreamer1-plugins-ugly-free  gstreamer-plugins-good,gstreamer-plugins-bad,gstreamer-plugins-ugly
+dnsmasq               dnsmasq                                   dnsmasq                                  dnsmasq                                  dnsmasq
+
+# --- services and security --------------------------------------------------
+opensnitch            opensnitch                                opensnitch|-                             -                                        -
+ufw                   ufw                                       ufw                                      ufw                                      ufw|-
+tailscale             tailscale                                 -                                        -                                        tailscale|-
+syncthing             syncthing                                 syncthing                                syncthing                                syncthing
+vnstat                vnstat                                    vnstat                                   vnstat                                   vnstat
+smartmontools         smartmontools                             smartmontools                            smartmontools                            smartmontools
+nethogs               nethogs                                   nethogs                                  nethogs                                  nethogs
+
+# --- developer toolchain ----------------------------------------------------
+rustup                rustup                                    rustup                                   rustup                                   rustup
+nodejs                nodejs,npm                                nodejs,npm                               nodejs,npm                               nodejs-default,npm-default
+clang                 clang,llvm                                clang,llvm                               clang,llvm                               clang,llvm
+github-cli            github-cli                                gh                                       gh                                       gh
+glab                  glab                                      glab|-                                   glab                                     -
+docker                docker,docker-compose,docker-buildx       docker.io,docker-compose                 moby-engine,docker-compose               docker,docker-compose
+lazydocker            lazydocker                                -                                        -                                        -
+android-tools         android-tools                             adb,fastboot                             android-tools                            android-tools
+apktool               aur:android-apktool-bin                   apktool                                  -                                        -
+rizin                 rizin                                     rizin|-                                  rizin                                    rizin|-
+ghidra                ghidra                                    flatpak:org.ghidra_sre.Ghidra            flatpak:org.ghidra_sre.Ghidra            flatpak:org.ghidra_sre.Ghidra
+mise                  mise                                      -                                        -                                        -
+ollama-nvidia         ollama-cuda                               -                                        -                                        -
+ollama-amd            ollama-rocm                               -                                        -                                        -
+ollama-cpu            ollama                                    -                                        -                                        -
+flutter-deps          clang,cmake,ninja,pkgconf,gtk3            clang,cmake,ninja-build,pkg-config,libgtk-3-dev  clang,cmake,ninja-build,gtk3-devel  clang,cmake,ninja,gtk3-devel
+tauri-deps            webkit2gtk-4.1,libappindicator-gtk3,librsvg  libwebkit2gtk-4.1-dev,libayatana-appindicator3-dev,librsvg2-dev  webkit2gtk4.1-devel,libappindicator-gtk3-devel,librsvg2-devel  webkit2gtk3-devel,libappindicator3-devel,librsvg-devel

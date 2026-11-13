@@ -1,0 +1,38 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint shell scripts
+        run: shellcheck -x -S warning setup.sh core/pratirupa.sh tools/*.sh tests/*.sh modules/*/module.sh modules/own-scripts/files/cast-screen modules/own-scripts/files/media-stay-awake
+      - name: Core tests (throwaway HOME)
+        run: bash tests/core-test.sh
+      - name: Leak scan (generic patterns; the personal deny-list stays off GitHub)
+        run: |
+          curl -fsSL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz | tar xz gitleaks
+          sudo mv gitleaks /usr/local/bin/
+          : > "$RUNNER_TEMP/deny-list.txt"
+          PRATIRUPA_DENYLIST="$RUNNER_TEMP/deny-list.txt" bash tools/leak-scan.sh
+
+  distros:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [arch, debian, ubuntu, fedora, opensuse]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dry run every module, install services-security
+        run: bash tests/containers.sh ${{ matrix.distro }}
+      - name: Show the log
+        if: always()
+        run: cat /tmp/pratirupa-containers/${{ matrix.distro }}.log

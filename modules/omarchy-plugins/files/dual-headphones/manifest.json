@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "pratirupa.dual-headphones",
+  "name": "Dual Headphones",
+  "version": "1.0.0",
+  "author": "pratirupa",
+  "description": "One-click toggle that plays audio on every connected Bluetooth headphone at once through the combined PipeWire sink",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Widget.qml"
+  },
+  "barWidget": {
+    "displayName": "Dual Headphones",
+    "description": "Toggle the combined Bluetooth headphones output",
+    "category": "Audio",
+    "aliases": [
+      "headphones",
+      "combined"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "sink": "bt_combined"
+    },
+    "schema": [
+      {
+        "key": "sink",
+        "type": "string",
+        "label": "Combined sink",
+        "defaultValue": "bt_combined",
+        "description": "node.name of the PipeWire combine-stream sink that mirrors audio to the headphones."
+      }
+    ]
+  }
+}

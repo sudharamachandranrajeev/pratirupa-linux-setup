@@ -1,0 +1,40 @@
+#!/bin/bash
+# Keep the screen on (no screensaver / screen-off / idle lock) while any MPRIS
+# media player (VLC, browsers, Spotify, mpv...) is Playing. Uses the Omarchy
+# shell's own idle switch, and only re-enables idle if *we* disabled it, so a
+# manual "stay awake" toggle (Super+Ctrl+I) is left alone.
+
+INTERVAL=10
+held=false
+
+media_playing() {
+  local p
+  for p in $(busctl --user list --no-legend 2>/dev/null | awk '{print $1}' | grep '^org\.mpris\.MediaPlayer2\.'); do
+    busctl --user get-property "$p" /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null \
+      | grep -q '"Playing"' && return 0
+  done
+  return 1
+}
+
+idle_enabled() {
+  omarchy-shell idle status 2>/dev/null | grep -q '"enabled":true'
+}
+
+release() {
+  if $held; then
+    omarchy-shell -q idle enable >/dev/null 2>&1 && echo "Media stopped: idle re-enabled"
+    held=false
+  fi
+}
+trap 'release; exit 0' TERM INT
+
+while true; do
+  if media_playing; then
+    if ! $held && idle_enabled; then
+      omarchy-shell -q idle disable >/dev/null 2>&1 && held=true && echo "Media playing: idle disabled"
+    fi
+  else
+    release
+  fi
+  sleep "$INTERVAL" & wait $!
+done
